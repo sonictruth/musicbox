@@ -8,19 +8,30 @@ from mpd import MPDClient
 import os
 import time
 
-connected = False
+client = MPDClient()
 host = 'localhost'
 
-while connected == False:
+def connect():
+    connected = False
+    status = None
     try:
-        print('Connecting', host)
-        client = MPDClient()
-        client.timeout = 20
-        client.idletimeout = None
-        client.connect(host, 6600)
+        client.status()
         connected = True
     except:
-        time.sleep(1)
+        print('Not connected')
+
+
+    while connected == False:
+        try:
+            print('Connecting', host)
+            client.timeout = 20
+            client.idletimeout = None
+            client.connect(host, 6600)
+            connected = True
+        except:
+            time.sleep(1)
+
+connect()
 
 KEYPAD = [
     [1, 2],
@@ -32,6 +43,7 @@ ROW_PINS = [26, 20]
 COL_PINS = [19, 16]
 
 def handleKey(key):
+    connect()
     if(key == 1):
         song = client.currentsong()
         if(song):
